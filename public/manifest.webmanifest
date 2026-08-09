@@ -1,0 +1,31 @@
+{
+    "name": "Self Photo Booth Pose Assistant",
+    "short_name": "Pose Assistant",
+    "description": "Shows pose recommendations on the tablet next to a self photo booth camera.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "landscape",
+    "background_color": "#171717",
+    "theme_color": "#171717",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
