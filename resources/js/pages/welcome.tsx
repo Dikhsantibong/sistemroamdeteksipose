@@ -5,6 +5,7 @@ import { CameraPreview } from '@/components/booth/camera-preview';
 import { CategoryPicker } from '@/components/booth/category-picker';
 import { InputStatus } from '@/components/booth/input-status';
 import { NavigationControls } from '@/components/booth/navigation-controls';
+import { OrientationToggle } from '@/components/booth/orientation-toggle';
 import { RemoteControlPicker } from '@/components/booth/remote-control-picker';
 import { useCamera } from '@/hooks/booth/use-camera';
 import { useContentSync } from '@/hooks/booth/use-content-sync';
@@ -282,6 +283,8 @@ export default function Booth({
                             onSelect={remote.choose}
                         />
                     )}
+
+                    <OrientationToggle />
                 </header>
 
                 {/* Pose name + counter overlay (only when showing pose) */}
