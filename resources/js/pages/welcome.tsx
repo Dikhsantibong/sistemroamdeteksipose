@@ -5,7 +5,6 @@ import { CameraPreview } from '@/components/booth/camera-preview';
 import { CategoryPicker } from '@/components/booth/category-picker';
 import { InputStatus } from '@/components/booth/input-status';
 import { NavigationControls } from '@/components/booth/navigation-controls';
-import { PoseDisplay } from '@/components/booth/pose-display';
 import { RemoteControlPicker } from '@/components/booth/remote-control-picker';
 import { useCamera } from '@/hooks/booth/use-camera';
 import { useContentSync } from '@/hooks/booth/use-content-sync';
@@ -226,12 +225,37 @@ export default function Booth({
 
     const boothMessage = message();
 
+    const showingPose = state === 'SHOWING_POSE' && navigation.currentPose;
+
     return (
         <>
             <Head title="Booth" />
 
-            <div className="booth-theme flex h-screen w-screen flex-col overflow-hidden bg-booth p-3 text-booth-foreground">
-                <header className="flex shrink-0 items-start justify-between gap-4">
+            <div className="booth-theme relative h-screen w-screen overflow-hidden bg-booth text-booth-foreground">
+                {/* Full-screen pose image background */}
+                {showingPose && (
+                    <img
+                        key={navigation.currentPose.id}
+                        src={navigation.currentPose.image_url}
+                        alt={navigation.currentPose.name}
+                        className="absolute inset-0 h-full w-full animate-in object-contain duration-300 fade-in"
+                    />
+                )}
+
+                {/* Full-screen message when not showing a pose */}
+                {boothMessage && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <BoothMessage
+                            title={boothMessage.title}
+                            description={boothMessage.description}
+                        />
+                    </div>
+                )}
+
+                {/* ---- All UI overlays on top ---- */}
+
+                {/* Top bar: category picker + remote control */}
+                <header className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3">
                     <CategoryPicker
                         categories={categories}
                         activeId={categoryId}
@@ -248,29 +272,29 @@ export default function Booth({
                     )}
                 </header>
 
-                {/* Keyed on the session inputs so a new set fades in instead of
-                    swapping abruptly. */}
-                <main
-                    key={`${detection.stableCount}-${categoryId ?? 'all'}`}
-                    className="min-h-0 flex-1 animate-in py-1 duration-500 fade-in"
-                >
-                    {boothMessage ? (
-                        <BoothMessage
-                            title={boothMessage.title}
-                            description={boothMessage.description}
-                        />
-                    ) : (
-                        navigation.currentPose && (
-                            <PoseDisplay
-                                pose={navigation.currentPose}
-                                index={navigation.index}
-                                total={navigation.total}
-                            />
-                        )
-                    )}
-                </main>
+                {/* Pose name + counter overlay (only when showing pose) */}
+                {showingPose && (
+                    <div className="absolute inset-x-0 bottom-0 z-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pt-20 pb-20">
+                        <div className="flex items-end justify-between gap-4">
+                            <div className="min-w-0 flex-1">
+                                <h1 className="truncate text-2xl leading-tight font-semibold tracking-tight text-white">
+                                    {navigation.currentPose.name}
+                                </h1>
+                                {navigation.currentPose.instruction && (
+                                    <p className="mt-0.5 line-clamp-1 text-base text-white/75">
+                                        {navigation.currentPose.instruction}
+                                    </p>
+                                )}
+                            </div>
+                            <p className="shrink-0 font-mono text-lg tabular-nums text-white/80">
+                                {navigation.index + 1} / {navigation.total}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
-                <div className="flex shrink-0 items-end justify-between gap-4">
+                {/* Bottom bar: camera + status + nav buttons */}
+                <div className="absolute inset-x-0 bottom-0 z-10 flex items-end gap-3 p-3">
                     <CameraPreview
                         videoRef={videoRef}
                         cameraStatus={cameraStatus}
@@ -281,7 +305,7 @@ export default function Booth({
                     />
 
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center justify-between gap-3">
                             <InputStatus
                                 remote={remote.active}
                                 voiceStatus={voice.status}
@@ -292,7 +316,7 @@ export default function Booth({
                                 gestureLastSwipeAt={gesture.lastSwipeAt}
                             />
 
-                            <span className="shrink-0 text-sm text-booth-muted">
+                            <span className="shrink-0 text-xs text-booth-muted">
                                 {syncStatus === 'offline'
                                     ? 'Offline'
                                     : groupLabel}
@@ -309,14 +333,14 @@ export default function Booth({
                 </div>
 
                 {updateAvailable && (
-                    <div className="absolute right-8 bottom-8 flex items-center gap-4 rounded-lg border border-booth-border bg-booth-surface px-6 py-4">
-                        <span className="text-lg">Versi baru tersedia.</span>
+                    <div className="absolute top-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 rounded-lg border border-booth-border bg-booth-surface/90 px-4 py-2 backdrop-blur-sm">
+                        <span className="text-sm">Versi baru tersedia.</span>
                         <button
                             type="button"
                             onClick={applyUpdate}
-                            className="rounded-md bg-booth-accent px-4 py-2 text-lg font-medium text-booth-accent-foreground"
+                            className="rounded-md bg-booth-accent px-3 py-1.5 text-sm font-medium text-booth-accent-foreground"
                         >
-                            Perbarui Sekarang
+                            Perbarui
                         </button>
                     </div>
                 )}
