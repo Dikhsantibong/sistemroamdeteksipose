@@ -230,7 +230,7 @@ export default function Booth({
         <>
             <Head title="Booth" />
 
-            <div className="booth-theme flex h-screen w-screen flex-col overflow-hidden bg-booth p-8 text-booth-foreground">
+            <div className="booth-theme flex h-screen w-screen flex-col overflow-hidden bg-booth p-5 text-booth-foreground">
                 <header className="flex shrink-0 items-start justify-between gap-6">
                     <CategoryPicker
                         categories={categories}
@@ -252,7 +252,7 @@ export default function Booth({
                     swapping abruptly. */}
                 <main
                     key={`${detection.stableCount}-${categoryId ?? 'all'}`}
-                    className="min-h-0 flex-1 animate-in py-6 duration-500 fade-in"
+                    className="min-h-0 flex-1 animate-in py-3 duration-500 fade-in"
                 >
                     {boothMessage ? (
                         <BoothMessage
@@ -270,7 +270,7 @@ export default function Booth({
                     )}
                 </main>
 
-                <div className="flex shrink-0 items-end justify-between gap-6 pb-4">
+                <div className="flex shrink-0 items-end justify-between gap-6 pb-2">
                     <CameraPreview
                         videoRef={videoRef}
                         cameraStatus={cameraStatus}
