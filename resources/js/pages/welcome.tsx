@@ -230,8 +230,8 @@ export default function Booth({
         <>
             <Head title="Booth" />
 
-            <div className="booth-theme flex h-screen w-screen flex-col overflow-hidden bg-booth p-5 text-booth-foreground">
-                <header className="flex shrink-0 items-start justify-between gap-6">
+            <div className="booth-theme flex h-screen w-screen flex-col overflow-hidden bg-booth p-3 text-booth-foreground">
+                <header className="flex shrink-0 items-start justify-between gap-4">
                     <CategoryPicker
                         categories={categories}
                         activeId={categoryId}
@@ -252,7 +252,7 @@ export default function Booth({
                     swapping abruptly. */}
                 <main
                     key={`${detection.stableCount}-${categoryId ?? 'all'}`}
-                    className="min-h-0 flex-1 animate-in py-3 duration-500 fade-in"
+                    className="min-h-0 flex-1 animate-in py-1 duration-500 fade-in"
                 >
                     {boothMessage ? (
                         <BoothMessage
@@ -270,7 +270,7 @@ export default function Booth({
                     )}
                 </main>
 
-                <div className="flex shrink-0 items-end justify-between gap-6 pb-2">
+                <div className="flex shrink-0 items-end justify-between gap-4">
                     <CameraPreview
                         videoRef={videoRef}
                         cameraStatus={cameraStatus}
@@ -280,31 +280,33 @@ export default function Booth({
                         showHandState={remote.active === 'gesture'}
                     />
 
-                    <div className="flex flex-1 items-center justify-between gap-6">
-                        <InputStatus
-                            remote={remote.active}
-                            voiceStatus={voice.status}
-                            voiceLastHeardAt={voice.lastHeardAt}
-                            voiceLanguage={settings.voice_language}
-                            gestureStatus={gesture.status}
-                            handVisible={gesture.handVisible}
-                            gestureLastSwipeAt={gesture.lastSwipeAt}
-                        />
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                        <div className="flex items-center justify-between gap-4">
+                            <InputStatus
+                                remote={remote.active}
+                                voiceStatus={voice.status}
+                                voiceLastHeardAt={voice.lastHeardAt}
+                                voiceLanguage={settings.voice_language}
+                                gestureStatus={gesture.status}
+                                handVisible={gesture.handVisible}
+                                gestureLastSwipeAt={gesture.lastSwipeAt}
+                            />
 
-                        <span className="text-base text-booth-muted">
-                            {syncStatus === 'offline'
-                                ? 'Mode offline — memakai pose tersimpan'
-                                : groupLabel}
-                        </span>
+                            <span className="shrink-0 text-sm text-booth-muted">
+                                {syncStatus === 'offline'
+                                    ? 'Offline'
+                                    : groupLabel}
+                            </span>
+                        </div>
+
+                        {settings.manual_navigation_enabled && (
+                            <NavigationControls
+                                onAction={handleManual}
+                                disabled={navigation.total === 0}
+                            />
+                        )}
                     </div>
                 </div>
-
-                {settings.manual_navigation_enabled && (
-                    <NavigationControls
-                        onAction={handleManual}
-                        disabled={navigation.total === 0}
-                    />
-                )}
 
                 {updateAvailable && (
                     <div className="absolute right-8 bottom-8 flex items-center gap-4 rounded-lg border border-booth-border bg-booth-surface px-6 py-4">

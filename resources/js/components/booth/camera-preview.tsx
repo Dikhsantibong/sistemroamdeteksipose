@@ -33,7 +33,7 @@ export function CameraPreview({
     const ready = cameraStatus === 'ready';
 
     return (
-        <div className="w-56 shrink-0 overflow-hidden rounded-lg border border-booth-border bg-booth-surface">
+        <div className="w-40 shrink-0 overflow-hidden rounded-lg border border-booth-border bg-booth-surface">
             <div className="relative aspect-video">
                 {/* Mirrored so the customer sees themselves the way a mirror
                     would, which is what makes a swipe feel the right way round. */}
