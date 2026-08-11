@@ -234,12 +234,24 @@ export default function Booth({
             <div className="booth-theme relative h-screen w-screen overflow-hidden bg-booth text-booth-foreground">
                 {/* Full-screen pose image background */}
                 {showingPose && (
-                    <img
-                        key={navigation.currentPose.id}
-                        src={navigation.currentPose.image_url}
-                        alt={navigation.currentPose.name}
-                        className="absolute inset-0 h-full w-full animate-in object-contain duration-300 fade-in"
-                    />
+                    <>
+                        {/* Blurred ambient fill — covers empty space when the
+                            pose is portrait on a landscape screen, or vice versa. */}
+                        <img
+                            src={navigation.currentPose.image_url}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-30 blur-2xl"
+                        />
+
+                        {/* Sharp pose image, always fully visible */}
+                        <img
+                            key={navigation.currentPose.id}
+                            src={navigation.currentPose.image_url}
+                            alt={navigation.currentPose.name}
+                            className="absolute inset-0 h-full w-full animate-in object-contain duration-300 fade-in"
+                        />
+                    </>
                 )}
 
                 {/* Full-screen message when not showing a pose */}
