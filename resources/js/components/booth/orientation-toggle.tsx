@@ -1,4 +1,4 @@
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Smartphone, Tablet } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 type Orientation = 'landscape' | 'portrait';
@@ -8,74 +8,80 @@ function getCurrentOrientation(): Orientation {
 }
 
 /**
- * A small button that toggles the screen orientation between landscape and
- * portrait using the Screen Orientation API (available in standalone PWA mode).
+ * A prominent button that toggles the screen orientation between landscape and
+ * portrait. Uses the Screen Orientation API, falling back to requesting
+ * fullscreen first (required by most Android browsers).
  */
 export function OrientationToggle() {
     const [orientation, setOrientation] = useState<Orientation>(
         getCurrentOrientation,
     );
-    const [supported, setSupported] = useState(true);
 
     useEffect(() => {
-        if (!screen.orientation) {
-            setSupported(false);
-
-            return;
-        }
-
         const onChange = () => setOrientation(getCurrentOrientation());
 
-        screen.orientation.addEventListener('change', onChange);
+        screen.orientation?.addEventListener('change', onChange);
         window.addEventListener('resize', onChange);
 
         return () => {
-            screen.orientation.removeEventListener('change', onChange);
+            screen.orientation?.removeEventListener('change', onChange);
             window.removeEventListener('resize', onChange);
         };
     }, []);
 
     const toggle = useCallback(async () => {
-        if (!screen.orientation?.lock) {
-            setSupported(false);
-
-            return;
-        }
-
         const target: OrientationLockType =
             orientation === 'landscape' ? 'portrait' : 'landscape';
 
+        // Try locking orientation directly first (works in standalone PWA).
+        if (screen.orientation?.lock) {
+            try {
+                await screen.orientation.lock(target);
+                setOrientation(target);
+
+                return;
+            } catch {
+                // Falls through to fullscreen approach.
+            }
+        }
+
+        // Fallback: request fullscreen first, then lock orientation.
+        // Most Android browsers require fullscreen for orientation lock.
         try {
-            await screen.orientation.lock(target);
-            setOrientation(target);
+            const element = document.documentElement;
+
+            if (!document.fullscreenElement) {
+                await element.requestFullscreen();
+            }
+
+            if (screen.orientation?.lock) {
+                await screen.orientation.lock(target);
+                setOrientation(target);
+            }
         } catch {
-            // lock() fails outside standalone / fullscreen mode.
-            setSupported(false);
+            // Last resort: just tell the user to rotate manually.
+            alert(
+                orientation === 'landscape'
+                    ? 'Putar tablet ke posisi tegak (potret) secara manual.'
+                    : 'Putar tablet ke posisi tidur (lanskap) secara manual.',
+            );
         }
     }, [orientation]);
 
-    if (!supported) {
-        return null;
-    }
-
-    const label =
-        orientation === 'landscape'
-            ? 'Beralih ke potret'
-            : 'Beralih ke lanskap';
+    const isLandscape = orientation === 'landscape';
+    const Icon = isLandscape ? Smartphone : Tablet;
+    const label = isLandscape ? 'Potret' : 'Lanskap';
 
     return (
         <button
             type="button"
             onClick={toggle}
-            title={label}
-            aria-label={label}
-            className="flex items-center justify-center rounded-lg border border-white/15 bg-black/40 p-2 backdrop-blur-sm transition-colors hover:bg-black/60"
+            title={isLandscape ? 'Beralih ke potret' : 'Beralih ke lanskap'}
+            className="flex shrink-0 items-center gap-2 rounded-xl border border-booth-accent/50 bg-booth-accent/20 px-4 py-2.5 text-booth-accent backdrop-blur-sm transition-colors hover:bg-booth-accent/30 active:bg-booth-accent/40"
         >
-            <RotateCcw
-                className={`size-5 text-white/80 transition-transform ${
-                    orientation === 'portrait' ? 'rotate-90' : ''
-                }`}
-            />
+            <RotateCcw className="size-5" />
+            <span className="text-sm font-medium">{label}</span>
+            <Icon className="size-4 opacity-70" />
         </button>
     );
 }
