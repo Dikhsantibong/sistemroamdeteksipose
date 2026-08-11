@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 class BoothSettings
 {
     /**
-     * The cache key holding the resolved settings map.
+     * The prefix of the cache key holding the resolved settings map.
      */
     public const CACHE_KEY = 'booth.settings';
 
@@ -26,7 +26,7 @@ class BoothSettings
      */
     public function all(): array
     {
-        return Cache::rememberForever(self::CACHE_KEY, function (): array {
+        return Cache::rememberForever($this->cacheKey(), function (): array {
             $stored = Setting::query()->get()->keyBy('key');
 
             $resolved = [];
@@ -83,7 +83,26 @@ class BoothSettings
      */
     public function flush(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        Cache::forget($this->cacheKey());
+    }
+
+    /**
+     * Build the cache key for the current set of setting definitions.
+     *
+     * The definition fingerprint is part of the key so adding a setting to
+     * config/booth.php cannot serve a stale map that is missing the new entry.
+     * Without it a deployment would silently ship `undefined` to the tablet
+     * until somebody cleared the cache by hand.
+     */
+    protected function cacheKey(): string
+    {
+        $fingerprint = substr(
+            md5(implode('|', array_keys($this->definitions()))),
+            0,
+            8,
+        );
+
+        return self::CACHE_KEY.'.'.$fingerprint;
     }
 
     /**

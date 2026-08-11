@@ -66,17 +66,17 @@ return [
         'voice_confidence' => [
             'type' => 'float',
             'group' => 'navigation',
-            'default' => 0.6,
+            'default' => 0.4,
             'label' => 'Voice Confidence',
-            'description' => 'Minimum confidence before a spoken command is accepted.',
+            'description' => 'Below 0.5 the booth also accepts near-misses such as "nexr". Raise it if unrelated words move the slides.',
             'rules' => ['required', 'numeric', 'min:0', 'max:1'],
         ],
         'gesture_confidence' => [
             'type' => 'float',
             'group' => 'navigation',
-            'default' => 0.7,
+            'default' => 0.4,
             'label' => 'Gesture Confidence',
-            'description' => 'Minimum hand detection confidence before a swipe counts.',
+            'description' => 'Minimum hand detection confidence. Lower it when customers stand further away.',
             'rules' => ['required', 'numeric', 'min:0', 'max:1'],
         ],
         'gesture_cooldown' => [

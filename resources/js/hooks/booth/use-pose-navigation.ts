@@ -9,6 +9,7 @@ import type { BoothPose } from '@/types';
 type Options = {
     poses: BoothPose[];
     peopleCount: number;
+    categoryId: number | null;
     recommendationCount: number;
     loop: boolean;
 };
@@ -16,6 +17,7 @@ type Options = {
 type Session = {
     poses: BoothPose[];
     peopleCount: number;
+    categoryId: number | null;
     limit: number;
     items: BoothPose[];
     index: number;
@@ -25,13 +27,15 @@ type Session = {
 function startSession(
     poses: BoothPose[],
     peopleCount: number,
+    categoryId: number | null,
     limit: number,
 ): Session {
     return {
         poses,
         peopleCount,
+        categoryId,
         limit,
-        items: getRecommendations(poses, peopleCount, limit),
+        items: getRecommendations(poses, peopleCount, limit, categoryId),
         index: 0,
         lastSource: null,
     };
@@ -47,22 +51,26 @@ function startSession(
 export function usePoseNavigation({
     poses,
     peopleCount,
+    categoryId,
     recommendationCount,
     loop,
 }: Options) {
     const [session, setSession] = useState<Session>(() =>
-        startSession(poses, peopleCount, recommendationCount),
+        startSession(poses, peopleCount, categoryId, recommendationCount),
     );
 
-    // A new stable people count clears the current recommendations and starts a
-    // fresh session on the first pose. Adjusting state during render is the
-    // documented way to reset derived state when the inputs change.
+    // A new group size, a new category or a content sync starts a fresh session
+    // on the first pose. Adjusting state during render is the documented way to
+    // reset derived state when the inputs change.
     if (
         session.poses !== poses ||
         session.peopleCount !== peopleCount ||
+        session.categoryId !== categoryId ||
         session.limit !== recommendationCount
     ) {
-        setSession(startSession(poses, peopleCount, recommendationCount));
+        setSession(
+            startSession(poses, peopleCount, categoryId, recommendationCount),
+        );
     }
 
     const dispatch = useCallback(

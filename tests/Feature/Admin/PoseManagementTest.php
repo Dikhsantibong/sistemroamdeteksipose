@@ -178,6 +178,55 @@ class PoseManagementTest extends TestCase
         Storage::disk('public')->assertMissing($poses->first()->image_path);
     }
 
+    public function test_poses_can_be_moved_into_a_category_in_bulk()
+    {
+        $category = Category::factory()->create();
+        $poses = Pose::factory()->count(3)->forPeopleCount(4)->withoutCategory()->create();
+
+        $this->actingAs($this->user)
+            ->post(route('admin.poses.bulk-action'), [
+                'action' => 'categorize',
+                'ids' => $poses->modelKeys(),
+                'category_id' => $category->id,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertSame(
+            3,
+            Pose::query()->where('category_id', $category->id)->count(),
+        );
+    }
+
+    public function test_poses_can_be_cleared_of_their_category_in_bulk()
+    {
+        $poses = Pose::factory()->count(2)->forPeopleCount(4)->create();
+
+        $this->actingAs($this->user)
+            ->post(route('admin.poses.bulk-action'), [
+                'action' => 'categorize',
+                'ids' => $poses->modelKeys(),
+                'category_id' => null,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertSame(2, Pose::query()->whereNull('category_id')->count());
+    }
+
+    public function test_moving_poses_into_an_unknown_category_is_rejected()
+    {
+        $pose = Pose::factory()->forPeopleCount(4)->create();
+
+        $this->actingAs($this->user)
+            ->post(route('admin.poses.bulk-action'), [
+                'action' => 'categorize',
+                'ids' => [$pose->id],
+                'category_id' => 9999,
+            ])
+            ->assertSessionHasErrors('category_id');
+    }
+
     public function test_an_unknown_bulk_action_is_rejected()
     {
         $pose = Pose::factory()->forPeopleCount(4)->create();

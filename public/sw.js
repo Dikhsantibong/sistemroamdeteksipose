@@ -11,14 +11,17 @@
  * Bump APP_VERSION when the shell changes. The tablet then sees an update and
  * offers it to the operator instead of reloading mid session.
  */
-const APP_VERSION = 'v2';
+const APP_VERSION = 'v3';
+
+/** The URL the installed application launches with. See EnsureBoothMode. */
+const BOOTH_URL = '/?mode=booth';
 
 const SHELL_CACHE = `pose-assistant-shell-${APP_VERSION}`;
 const ASSET_CACHE = `pose-assistant-assets-${APP_VERSION}`;
 const CONTENT_CACHE = 'pose-assistant-content';
 
 const SHELL_URLS = [
-    '/',
+    BOOTH_URL,
     '/manifest.webmanifest',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
@@ -129,7 +132,9 @@ self.addEventListener('fetch', (event) => {
 
     if (request.mode === 'navigate') {
         event.respondWith(
-            networkFirst(request, SHELL_CACHE).catch(() => caches.match('/')),
+            networkFirst(request, SHELL_CACHE).catch(() =>
+                caches.match(BOOTH_URL),
+            ),
         );
 
         return;

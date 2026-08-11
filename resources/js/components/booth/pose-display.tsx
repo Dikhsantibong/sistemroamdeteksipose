@@ -27,16 +27,16 @@ export function PoseDisplay({
             </div>
 
             <div className="flex w-2/5 max-w-md flex-col gap-6">
-                <p className="font-mono text-2xl text-neutral-400 tabular-nums">
+                <p className="font-mono text-2xl text-booth-accent tabular-nums">
                     {index + 1} / {total}
                 </p>
 
-                <h1 className="text-4xl leading-tight font-semibold tracking-tight">
+                <h1 className="text-4xl leading-tight font-semibold tracking-tight text-booth-foreground">
                     {pose.name}
                 </h1>
 
                 {pose.instruction && (
-                    <p className="text-2xl leading-relaxed text-neutral-300">
+                    <p className="text-2xl leading-relaxed text-booth-muted">
                         {pose.instruction}
                     </p>
                 )}

@@ -46,16 +46,32 @@ export async function createPersonDetector(
 
 /**
  * Create the detector used to read swipe gestures.
+ *
+ * Both hands are tracked so the customer can wave with either one. Presence and
+ * tracking run at a lower bar than first detection: once a hand is found it
+ * should stay tracked through a fast swipe, which is exactly when landmark
+ * confidence dips.
  */
 export async function createHandLandmarker(
     confidence: number,
 ): Promise<HandLandmarker> {
-    return HandLandmarker.createFromOptions(await vision(), {
-        baseOptions: { modelAssetPath: HAND_MODEL, delegate: 'GPU' },
-        runningMode: 'VIDEO',
-        numHands: 1,
+    const options = (delegate: 'GPU' | 'CPU') => ({
+        baseOptions: { modelAssetPath: HAND_MODEL, delegate },
+        runningMode: 'VIDEO' as const,
+        numHands: 2,
         minHandDetectionConfidence: confidence,
-        minHandPresenceConfidence: confidence,
-        minTrackingConfidence: confidence,
+        minHandPresenceConfidence: Math.max(0.3, confidence - 0.2),
+        minTrackingConfidence: Math.max(0.3, confidence - 0.2),
     });
+
+    const fileset = await vision();
+
+    try {
+        return await HandLandmarker.createFromOptions(fileset, options('GPU'));
+    } catch {
+        // Person detection already holds a GPU context, and some Android
+        // drivers refuse a second one. CPU is slower but the hand model is
+        // small, and a working gesture beats no gesture.
+        return HandLandmarker.createFromOptions(fileset, options('CPU'));
+    }
 }

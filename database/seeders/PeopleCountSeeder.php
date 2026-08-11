@@ -21,7 +21,8 @@ class PeopleCountSeeder extends Seeder
             PeopleCount::query()->updateOrCreate(
                 ['count' => $count],
                 [
-                    'label' => $count === 1 ? '1 person' : "{$count} people",
+                    // Shown to customers on the booth, which is Indonesian.
+                    'label' => "{$count} orang",
                     'active' => true,
                     'sort_order' => $count,
                 ],

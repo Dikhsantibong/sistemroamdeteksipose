@@ -17,17 +17,17 @@ export function NavigationControls({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAction('PREVIOUS_POSE')}
-                className="h-24 flex-1 rounded-lg border-2 border-neutral-700 text-3xl font-medium text-neutral-100 transition-colors hover:bg-neutral-900 disabled:opacity-40"
+                className="h-24 flex-1 rounded-lg border-2 border-booth-border text-3xl font-medium text-booth-foreground transition-colors hover:bg-booth-surface disabled:opacity-40"
             >
-                Previous
+                Sebelumnya
             </button>
             <button
                 type="button"
                 disabled={disabled}
                 onClick={() => onAction('NEXT_POSE')}
-                className="h-24 flex-1 rounded-lg bg-neutral-100 text-3xl font-medium text-neutral-950 transition-colors hover:bg-white disabled:opacity-40"
+                className="h-24 flex-1 rounded-lg bg-booth-accent text-3xl font-medium text-booth-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
             >
-                Next
+                Berikutnya
             </button>
         </div>
     );

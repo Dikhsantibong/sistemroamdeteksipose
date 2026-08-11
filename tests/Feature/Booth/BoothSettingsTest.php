@@ -57,6 +57,23 @@ class BoothSettingsTest extends TestCase
         $this->assertSame(20, $this->settings->get('recommendation_count'));
     }
 
+    public function test_a_newly_defined_setting_is_not_hidden_by_a_stale_cache()
+    {
+        // Warm the cache with the current definitions.
+        $this->assertArrayNotHasKey('a_brand_new_setting', $this->settings->all());
+
+        config()->set('booth.settings.a_brand_new_setting', [
+            'type' => 'integer',
+            'group' => 'detection',
+            'default' => 42,
+            'label' => 'Brand New',
+            'description' => 'Added after the cache was warmed.',
+            'rules' => ['required', 'integer'],
+        ]);
+
+        $this->assertSame(42, $this->settings->get('a_brand_new_setting'));
+    }
+
     public function test_it_stores_booleans_in_a_reloadable_format()
     {
         $this->settings->update(['hand_gesture_enabled' => false]);

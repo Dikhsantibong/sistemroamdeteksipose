@@ -21,7 +21,7 @@ class PeopleCountFactory extends Factory
 
         return [
             'count' => $count,
-            'label' => $count === 1 ? '1 person' : "{$count} people",
+            'label' => "{$count} orang",
             'active' => true,
             'sort_order' => $count,
         ];

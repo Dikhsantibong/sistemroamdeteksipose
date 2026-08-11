@@ -31,7 +31,7 @@
         </style>
 
         <link rel="manifest" href="/manifest.webmanifest">
-        <meta name="theme-color" content="#171717">
+        <meta name="theme-color" content="#12301f">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

@@ -25,21 +25,52 @@ function shuffle<T>(items: T[]): T[] {
 /**
  * Build a recommendation session for the given group size.
  *
- * When fewer poses exist than requested, the smaller set is returned: poses are
- * never duplicated to reach the target count.
+ * `categoryId` narrows the set further; null means every category. When fewer
+ * poses exist than requested, the smaller set is returned: poses are never
+ * duplicated to reach the target count.
  */
 export function getRecommendations(
     poses: BoothPose[],
     peopleCount: number,
     limit: number,
+    categoryId: number | null = null,
 ): BoothPose[] {
     if (peopleCount < 1 || limit < 1) {
         return [];
     }
 
-    const matching = poses.filter((pose) => pose.people_count === peopleCount);
+    const matching = poses.filter(
+        (pose) =>
+            pose.people_count === peopleCount &&
+            (categoryId === null || pose.category?.id === categoryId),
+    );
 
     return shuffle(matching).slice(0, limit);
+}
+
+/**
+ * List the categories that actually have poses for the given group size.
+ *
+ * Deriving the list from the poses rather than the category table means the
+ * booth never offers a category that would come back empty.
+ */
+export function availableCategories(
+    poses: BoothPose[],
+    peopleCount: number,
+): { id: number; name: string }[] {
+    const found = new Map<number, string>();
+
+    for (const pose of poses) {
+        if (pose.people_count !== peopleCount || pose.category === null) {
+            continue;
+        }
+
+        found.set(pose.category.id, pose.category.name);
+    }
+
+    return [...found.entries()]
+        .map(([id, name]) => ({ id, name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**

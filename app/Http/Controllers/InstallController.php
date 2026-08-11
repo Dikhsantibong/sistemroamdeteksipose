@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\EnsureBoothMode;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -13,7 +14,7 @@ class InstallController extends Controller
     public function show(): Response
     {
         return Inertia::render('install', [
-            'boothUrl' => route('home'),
+            'boothUrl' => route('home', [EnsureBoothMode::QUERY => EnsureBoothMode::VALUE]),
         ]);
     }
 }

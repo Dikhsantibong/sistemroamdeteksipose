@@ -31,11 +31,14 @@ export function useCamera(enabled: boolean) {
             setStatus('requesting');
 
             try {
+                // 720p rather than VGA: a hand two or three metres away is only
+                // a few dozen pixels wide at 640x480, which is below what the
+                // landmarker can track reliably.
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: 'user',
-                        width: { ideal: 640 },
-                        height: { ideal: 480 },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
                     },
                     audio: false,
                 });

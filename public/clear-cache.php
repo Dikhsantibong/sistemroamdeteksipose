@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+
 /**
  * Temporary cache-clearing script for production debugging.
  *
@@ -8,25 +12,25 @@
  * IMPORTANT: Delete this file after use!
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$app = require_once __DIR__.'/../bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 echo "<pre>\n";
 echo "=== Clearing Laravel Caches ===\n\n";
 
-Illuminate\Support\Facades\Artisan::call('config:clear');
+Artisan::call('config:clear');
 echo "✅ Config cache cleared\n";
 
-Illuminate\Support\Facades\Artisan::call('route:clear');
+Artisan::call('route:clear');
 echo "✅ Route cache cleared\n";
 
-Illuminate\Support\Facades\Artisan::call('view:clear');
+Artisan::call('view:clear');
 echo "✅ View cache cleared\n";
 
-Illuminate\Support\Facades\Artisan::call('cache:clear');
+Artisan::call('cache:clear');
 echo "✅ Application cache cleared\n";
 
 // Show current APP_URL to verify
@@ -34,7 +38,7 @@ $appUrl = config('app.url');
 echo "\n=== Verification ===\n";
 echo "APP_URL = {$appUrl}\n";
 
-$storageUrl = Illuminate\Support\Facades\Storage::disk('public')->url('test.jpg');
+$storageUrl = Storage::disk('public')->url('test.jpg');
 echo "Storage URL example = {$storageUrl}\n";
 
 echo "\n⚠️  DELETE THIS FILE AFTER USE!\n";

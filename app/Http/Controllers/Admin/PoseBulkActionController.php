@@ -25,6 +25,7 @@ class PoseBulkActionController extends Controller
         $message = match ($request->action()) {
             'activate' => $this->setActiveState($ids, true),
             'deactivate' => $this->setActiveState($ids, false),
+            'categorize' => $this->setCategory($ids, $request->categoryId()),
             default => $this->deletePoses($poses),
         };
 
@@ -45,6 +46,22 @@ class PoseBulkActionController extends Controller
         return $active
             ? __(':count poses activated.', ['count' => $affected])
             : __(':count poses deactivated.', ['count' => $affected]);
+    }
+
+    /**
+     * Move the given poses into a category, or out of every category.
+     *
+     * @param  list<int>  $ids
+     */
+    protected function setCategory(array $ids, ?int $categoryId): string
+    {
+        $affected = Pose::query()
+            ->whereIn('id', $ids)
+            ->update(['category_id' => $categoryId]);
+
+        return $categoryId === null
+            ? __(':count poses removed from their category.', ['count' => $affected])
+            : __(':count poses moved.', ['count' => $affected]);
     }
 
     /**

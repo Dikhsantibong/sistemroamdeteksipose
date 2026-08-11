@@ -25,6 +25,7 @@ type Filters = {
 };
 
 const ANY = 'any';
+const NO_CATEGORY = 'none';
 
 export default function PoseIndex({
     poses,
@@ -63,7 +64,10 @@ export default function PoseIndex({
         );
     };
 
-    const runBulkAction = (action: 'activate' | 'deactivate' | 'delete') => {
+    const runBulkAction = (
+        action: 'activate' | 'deactivate' | 'delete' | 'categorize',
+        categoryId?: number | null,
+    ) => {
         if (selected.length === 0) {
             return;
         }
@@ -79,9 +83,16 @@ export default function PoseIndex({
 
         router.post(
             admin.poses.bulkAction().url,
-            { action, ids: selected },
+            { action, ids: selected, category_id: categoryId ?? null },
             { preserveScroll: true, onSuccess: () => setSelected([]) },
         );
+    };
+
+    const selectAllOnPage = () => {
+        const ids = poses.data.map((pose) => pose.id);
+        const allSelected = ids.every((id) => selected.includes(id));
+
+        setSelected(allSelected ? [] : ids);
     };
 
     return (
@@ -237,6 +248,46 @@ export default function PoseIndex({
                         >
                             Deactivate
                         </Button>
+                        <div className="flex items-center gap-2">
+                            <Label
+                                htmlFor="bulk-category"
+                                className="text-sm font-normal text-muted-foreground"
+                            >
+                                Move to
+                            </Label>
+                            <Select
+                                value=""
+                                onValueChange={(value) =>
+                                    runBulkAction(
+                                        'categorize',
+                                        value === NO_CATEGORY
+                                            ? null
+                                            : Number(value),
+                                    )
+                                }
+                            >
+                                <SelectTrigger
+                                    id="bulk-category"
+                                    className="h-8 w-48"
+                                >
+                                    <SelectValue placeholder="Choose category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={NO_CATEGORY}>
+                                        No category
+                                    </SelectItem>
+                                    {categories.map((category) => (
+                                        <SelectItem
+                                            key={category.id}
+                                            value={String(category.id)}
+                                        >
+                                            {category.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         <Button
                             size="sm"
                             variant="destructive"
@@ -266,7 +317,20 @@ export default function PoseIndex({
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b text-left text-muted-foreground">
-                                        <th className="w-10 py-2" />
+                                        <th className="w-10 py-2">
+                                            <Checkbox
+                                                checked={poses.data.every(
+                                                    (pose) =>
+                                                        selected.includes(
+                                                            pose.id,
+                                                        ),
+                                                )}
+                                                onCheckedChange={
+                                                    selectAllOnPage
+                                                }
+                                                aria-label="Select every pose on this page"
+                                            />
+                                        </th>
                                         <th className="w-20 py-2 pr-4 font-medium">
                                             Preview
                                         </th>

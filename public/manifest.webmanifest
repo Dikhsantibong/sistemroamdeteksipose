@@ -2,7 +2,7 @@
     "name": "Self Photo Booth Pose Assistant",
     "short_name": "Pose Assistant",
     "description": "Shows pose recommendations on the tablet next to a self photo booth camera.",
-    "start_url": "/",
+    "start_url": "/?mode=booth",
     "scope": "/",
     "display": "standalone",
     "orientation": "landscape",

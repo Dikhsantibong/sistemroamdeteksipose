@@ -16,9 +16,14 @@ class PoseBulkActionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => ['required', 'string', Rule::in(['activate', 'deactivate', 'delete'])],
+            'action' => [
+                'required',
+                'string',
+                Rule::in(['activate', 'deactivate', 'categorize', 'delete']),
+            ],
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', Rule::exists('poses', 'id')],
+            'category_id' => ['nullable', 'integer', Rule::exists('categories', 'id')],
         ];
     }
 
@@ -28,6 +33,19 @@ class PoseBulkActionRequest extends FormRequest
     public function action(): string
     {
         return $this->string('action')->value();
+    }
+
+    /**
+     * Get the category to move the poses into.
+     *
+     * A missing value means "no category", which is how an administrator clears
+     * the category from a batch of poses.
+     */
+    public function categoryId(): ?int
+    {
+        return $this->filled('category_id')
+            ? (int) $this->input('category_id')
+            : null;
     }
 
     /**

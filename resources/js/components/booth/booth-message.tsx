@@ -11,9 +11,11 @@ export function BoothMessage({
 }) {
     return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-            <p className="text-4xl font-semibold tracking-tight">{title}</p>
+            <p className="text-4xl font-semibold tracking-tight text-booth-foreground">
+                {title}
+            </p>
             {description && (
-                <p className="max-w-2xl text-2xl text-neutral-400">
+                <p className="max-w-2xl text-2xl text-booth-muted">
                     {description}
                 </p>
             )}
