@@ -267,7 +267,7 @@ export default function Booth({
                 {/* ---- All UI overlays on top ---- */}
 
                 {/* Top bar: category picker + remote control */}
-                <header className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3">
+                <header className="absolute inset-x-0 top-0 z-10 flex flex-col items-start gap-2 p-3 landscape:flex-row landscape:items-start landscape:justify-between landscape:gap-3">
                     <CategoryPicker
                         categories={categories}
                         activeId={categoryId}
@@ -286,7 +286,7 @@ export default function Booth({
 
                 {/* Pose name + counter overlay (only when showing pose) */}
                 {showingPose && (
-                    <div className="absolute inset-x-0 bottom-0 z-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pt-20 pb-20">
+                    <div className="absolute inset-x-0 bottom-0 z-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pt-20 pb-32 landscape:pb-20">
                         <div className="flex items-end justify-between gap-4">
                             <div className="min-w-0 flex-1">
                                 <h1 className="truncate text-2xl leading-tight font-semibold tracking-tight text-white">
@@ -306,7 +306,7 @@ export default function Booth({
                 )}
 
                 {/* Bottom bar: camera + status + nav buttons */}
-                <div className="absolute inset-x-0 bottom-0 z-10 flex items-end gap-3 p-3">
+                <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 p-3 landscape:flex-row landscape:items-end landscape:gap-3">
                     <CameraPreview
                         videoRef={videoRef}
                         cameraStatus={cameraStatus}

@@ -5,7 +5,7 @@
     "start_url": "/?mode=booth",
     "scope": "/",
     "display": "standalone",
-    "orientation": "landscape",
+    "orientation": "any",
     "background_color": "#171717",
     "theme_color": "#171717",
     "icons": [
