@@ -43,6 +43,14 @@ export function InputStatus({
 
     const hint = () => {
         if (isVoice) {
+            if (voiceStatus === 'unsupported') {
+                return 'Browser tidak mendukung perintah suara.';
+            }
+
+            if (voiceStatus === 'denied') {
+                return 'Izin mikrofon ditolak. Periksa pengaturan browser Anda.';
+            }
+
             if (voiceStatus === 'unavailable') {
                 return 'Perintah suara tidak tersedia. Gunakan tombol di bawah.';
             }

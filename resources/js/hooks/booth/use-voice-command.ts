@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { NavigationAction } from '@/lib/booth/navigation';
 import { extractCommandsFromAlternatives } from '@/lib/booth/voice-commands';
 
-export type VoiceStatus = 'idle' | 'starting' | 'listening' | 'unavailable';
+export type VoiceStatus =
+    | 'idle'
+    | 'starting'
+    | 'listening'
+    | 'denied'
+    | 'unsupported'
+    | 'unavailable';
 
 type Options = {
     enabled: boolean;
@@ -290,6 +296,7 @@ export function useVoiceCommand({
         };
 
         recognition.onerror = (event) => {
+            console.warn('Voice recognition error:', event.error);
             if (RECOVERABLE_ERRORS.has(event.error)) {
                 // A network hiccup deserves a longer pause than a silent room.
                 restart(event.error === 'network' ? 1500 : RESTART_DELAY_MS);
@@ -298,7 +305,11 @@ export function useVoiceCommand({
             }
 
             stopped = true;
-            setStatus('unavailable');
+            if (event.error === 'not-allowed') {
+                setStatus('denied');
+            } else {
+                setStatus('unavailable');
+            }
         };
 
         recognition.onend = () => restart();
@@ -359,7 +370,7 @@ export function useVoiceCommand({
     }
 
     if (Recognition === null) {
-        return { status: 'unavailable' as VoiceStatus, lastHeardAt };
+        return { status: 'unsupported' as VoiceStatus, lastHeardAt };
     }
 
     // The effect starts a session on mount, so "idle" while enabled means the
