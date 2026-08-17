@@ -8,7 +8,7 @@ export default function Remote({ token }: { token: string }) {
     const sendAction = async (action: 'NEXT_POSE' | 'PREVIOUS_POSE') => {
         setStatus('sending');
         try {
-            const response = await fetch(`/api/remote/${token}/action`, {
+            const response = await fetch(`/api/booth/remote/${token}/action`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

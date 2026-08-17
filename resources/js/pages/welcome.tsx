@@ -145,7 +145,7 @@ export default function Booth({
 
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`/api/remote/${remoteToken}/action`);
+                const res = await fetch(`/api/booth/remote/${remoteToken}/action`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.action) {
