@@ -12,6 +12,7 @@ export type NavigationSource = 'gesture' | 'voice' | 'manual';
 /** The states the booth moves through, from a cold start to showing a pose. */
 export type BoothState =
     | 'IDLE'
+    | 'STANDBY'
     | 'INITIALIZING'
     | 'DETECTING'
     | 'STABLE'

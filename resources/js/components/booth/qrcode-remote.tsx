@@ -26,10 +26,10 @@ export function QrCodeRemote({ token }: { token: string | null }) {
                 <Button 
                     variant="outline" 
                     size="icon" 
-                    className="size-12 rounded-full border-booth-border bg-booth-surface text-booth-foreground shadow-lg hover:bg-booth-border/50"
+                    className="size-14 rounded-full border-2 border-white bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95"
                     title="Remote Control HP"
                 >
-                    <QrCode className="size-5" />
+                    <QrCode className="size-8" />
                 </Button>
             </DialogTrigger>
             

@@ -15,6 +15,7 @@ createInertiaApp({
             // Booth mode and the install page are full screen: no app chrome.
             case name === 'welcome':
             case name === 'install':
+            case name === 'remote':
                 return null;
             case name.startsWith('auth/'):
                 return AuthLayout;

@@ -126,18 +126,18 @@ export default function Booth({
         onAction: handleVoice,
     });
 
+    const [sessionActive, setSessionActive] = useState(false);
     const [remoteToken, setRemoteToken] = useState<string | null>(null);
 
-    // Generate a new token whenever someone steps into the booth.
-    // If the count drops to 0, clear the token (invalidating the session).
+    // Generate a new token whenever a session starts.
+    // If the session ends, clear the token (invalidating the QR code).
     useEffect(() => {
-        if (detection.stableCount > 0) {
-            // Generate a random string for the session token
+        if (sessionActive) {
             setRemoteToken(Math.random().toString(36).substring(2, 10));
         } else {
             setRemoteToken(null);
         }
-    }, [detection.stableCount]);
+    }, [sessionActive]);
 
     // Poll for remote actions using the current token
     useEffect(() => {
@@ -173,6 +173,10 @@ export default function Booth({
     }, [peopleCounts, detection.stableCount]);
 
     const state: BoothState = useMemo(() => {
+        if (!sessionActive) {
+            return 'STANDBY';
+        }
+
         if (cameraStatus === 'denied' || cameraStatus === 'error') {
             return 'ERROR';
         }
@@ -230,6 +234,10 @@ export default function Booth({
                     ? 'Gunakan tombol di bawah untuk berpindah pose.'
                     : undefined,
             };
+        }
+
+        if (state === 'STANDBY') {
+            return null; // Handled directly in the render
         }
 
         if (state === 'INITIALIZING') {
@@ -319,11 +327,37 @@ export default function Booth({
                         />
                     )}
 
-                    <div className="absolute right-6 top-6 flex flex-col gap-3">
+                    <div className="absolute right-6 top-6 flex flex-col items-end gap-3 z-50">
                         <OrientationToggle />
                         <QrCodeRemote token={remoteToken} />
+                        {sessionActive && (
+                            <button
+                                onClick={() => setSessionActive(false)}
+                                className="rounded-xl border border-red-500/50 bg-red-500/20 px-4 py-2 text-sm font-semibold text-red-500 backdrop-blur-md transition-colors hover:bg-red-500/30"
+                            >
+                                Hentikan Sesi
+                            </button>
+                        )}
                     </div>
                 </header>
+
+                {/* Standby Landing Page */}
+                {state === 'STANDBY' && (
+                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
+                        <h1 className="mb-4 text-5xl font-bold tracking-tight text-white drop-shadow-lg">
+                            Selamat Datang
+                        </h1>
+                        <p className="mb-12 text-lg text-white/80">
+                            Sentuh tombol di bawah untuk memulai sesi foto Anda.
+                        </p>
+                        <button
+                            onClick={() => setSessionActive(true)}
+                            className="rounded-full bg-white px-12 py-6 text-2xl font-bold text-black shadow-2xl transition-transform hover:scale-105 active:scale-95"
+                        >
+                            Mulai Sesi Foto
+                        </button>
+                    </div>
+                )}
 
                 {/* Pose name + counter overlay (only when showing pose) */}
                 {showingPose && (
