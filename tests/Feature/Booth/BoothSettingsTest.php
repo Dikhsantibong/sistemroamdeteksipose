@@ -25,7 +25,7 @@ class BoothSettingsTest extends TestCase
     {
         $this->assertSame(10, $this->settings->get('recommendation_count'));
         $this->assertTrue($this->settings->get('manual_navigation_enabled'));
-        $this->assertSame('en-US', $this->settings->get('voice_language'));
+        $this->assertSame('id-ID', $this->settings->get('voice_language'));
     }
 
     public function test_it_casts_stored_values_to_the_declared_type()

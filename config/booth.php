@@ -58,7 +58,7 @@ return [
         'voice_language' => [
             'type' => 'string',
             'group' => 'navigation',
-            'default' => 'en-US',
+            'default' => 'id-ID',
             'label' => 'Voice Language',
             'description' => 'Recognition language used for voice commands.',
             'rules' => ['required', 'string', 'in:en-US,id-ID'],
