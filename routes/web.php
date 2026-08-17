@@ -4,6 +4,7 @@ use App\Http\Controllers\BoothController;
 use App\Http\Controllers\InstallController;
 use App\Http\Middleware\EnsureBoothMode;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /**
  * The application root is booth mode, but only for the installed tablet app.
@@ -20,6 +21,12 @@ Route::get('install', [InstallController::class, 'show'])->name('install');
 /** Kept so older bookmarks and installed shortcuts still reach booth mode. */
 Route::redirect('booth', '/?'.EnsureBoothMode::QUERY.'='.EnsureBoothMode::VALUE)
     ->name('booth');
+
+Route::get('remote/{token}', function (string $token) {
+    return Inertia::render('remote', [
+        'token' => $token,
+    ]);
+})->name('remote.show');
 
 /**
  * Fortify and the starter kit link to the "dashboard" route after authenticating.

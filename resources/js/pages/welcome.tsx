@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BoothMessage } from '@/components/booth/booth-message';
 import { CameraPreview } from '@/components/booth/camera-preview';
 import { CategoryPicker } from '@/components/booth/category-picker';
 import { InputStatus } from '@/components/booth/input-status';
 import { NavigationControls } from '@/components/booth/navigation-controls';
 import { OrientationToggle } from '@/components/booth/orientation-toggle';
+import { QrCodeRemote } from '@/components/booth/qrcode-remote';
 import { RemoteControlPicker } from '@/components/booth/remote-control-picker';
 import { useCamera } from '@/hooks/booth/use-camera';
 import { useContentSync } from '@/hooks/booth/use-content-sync';
@@ -124,6 +125,40 @@ export default function Booth({
         confidence: settings.voice_confidence,
         onAction: handleVoice,
     });
+
+    const [remoteToken, setRemoteToken] = useState<string | null>(null);
+
+    // Generate a new token whenever someone steps into the booth.
+    // If the count drops to 0, clear the token (invalidating the session).
+    useEffect(() => {
+        if (detection.stableCount > 0) {
+            // Generate a random string for the session token
+            setRemoteToken(Math.random().toString(36).substring(2, 10));
+        } else {
+            setRemoteToken(null);
+        }
+    }, [detection.stableCount]);
+
+    // Poll for remote actions using the current token
+    useEffect(() => {
+        if (!remoteToken) return;
+
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/remote/${remoteToken}/action`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.action) {
+                        dispatch(data.action as NavigationAction, 'manual');
+                    }
+                }
+            } catch (e) {
+                // Ignore network errors on polling
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [remoteToken, dispatch]);
 
     const groupLabel = useMemo(() => {
         const configured = peopleCounts.find(
@@ -284,7 +319,10 @@ export default function Booth({
                         />
                     )}
 
-                    <OrientationToggle />
+                    <div className="absolute right-6 top-6 flex flex-col gap-3">
+                        <OrientationToggle />
+                        <QrCodeRemote token={remoteToken} />
+                    </div>
                 </header>
 
                 {/* Pose name + counter overlay (only when showing pose) */}

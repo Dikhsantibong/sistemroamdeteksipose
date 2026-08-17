@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Booth\ContentVersionController;
 use App\Http\Controllers\Api\Booth\DeviceHeartbeatController;
 use App\Http\Controllers\Api\Booth\DeviceRegistrationController;
 use App\Http\Controllers\Api\Booth\PoseController;
+use App\Http\Controllers\Api\Booth\RemoteController;
 use App\Http\Middleware\AuthenticateDevice;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +24,7 @@ Route::prefix('booth')->name('api.booth.')->group(function () {
     Route::post('devices/heartbeat', DeviceHeartbeatController::class)
         ->middleware([AuthenticateDevice::class, 'throttle:30,1'])
         ->name('devices.heartbeat');
+
+    Route::post('remote/{token}/action', [RemoteController::class, 'store'])->name('remote.action.store');
+    Route::get('remote/{token}/action', [RemoteController::class, 'pull'])->name('remote.action.pull');
 });
