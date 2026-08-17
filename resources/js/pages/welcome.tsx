@@ -324,6 +324,7 @@ export default function Booth({
                             <InputStatus
                                 remote={remote.active}
                                 voiceStatus={voice.status}
+                                voiceRetry={voice.retry}
                                 voiceLastHeardAt={voice.lastHeardAt}
                                 voiceLanguage={settings.voice_language}
                                 gestureStatus={gesture.status}

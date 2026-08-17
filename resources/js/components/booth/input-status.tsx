@@ -6,6 +6,7 @@ import { voiceExamples } from '@/lib/booth/voice-commands';
 type Props = {
     remote: RemoteControl | null;
     voiceStatus: VoiceStatus;
+    voiceRetry?: () => void;
     voiceLastHeardAt: number;
     /** Recognition language, so the hint names words the engine listens for. */
     voiceLanguage: string;
@@ -24,6 +25,7 @@ type Props = {
 export function InputStatus({
     remote,
     voiceStatus,
+    voiceRetry,
     voiceLastHeardAt,
     voiceLanguage,
     gestureStatus,
@@ -81,7 +83,18 @@ export function InputStatus({
                     live ? 'bg-booth-accent' : 'bg-booth-border'
                 }`}
             />
-            <span>{hint()}</span>
+            <div className="flex items-center gap-2">
+                <span>{hint()}</span>
+                {isVoice && voiceStatus === 'denied' && voiceRetry && (
+                    <button
+                        type="button"
+                        onClick={voiceRetry}
+                        className="rounded-md border border-booth-border bg-booth-surface px-2 py-0.5 text-sm hover:bg-booth-border/50"
+                    >
+                        Coba Lagi
+                    </button>
+                )}
+            </div>
 
             {/* Keyed on the timestamp so each accepted command replays the fade,
                 confirming the booth heard or saw it. */}

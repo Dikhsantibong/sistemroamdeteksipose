@@ -130,6 +130,7 @@ export function useVoiceCommand({
 }: Options) {
     const [status, setStatus] = useState<VoiceStatus>('idle');
     const [lastHeardAt, setLastHeardAt] = useState(0);
+    const [retryCount, setRetryCount] = useState(0);
 
     const onActionRef = useRef(onAction);
     const activityRef = useRef(0);
@@ -363,7 +364,7 @@ export function useVoiceCommand({
 
             setStatus('idle');
         };
-    }, [enabled, language, Recognition, handleResult]);
+    }, [enabled, language, Recognition, handleResult, retryCount]);
 
     if (!enabled) {
         return { status: 'idle' as VoiceStatus, lastHeardAt: 0 };
@@ -378,5 +379,10 @@ export function useVoiceCommand({
     return {
         status: status === 'idle' ? ('starting' as VoiceStatus) : status,
         lastHeardAt,
+        retry: () => {
+            setStatus('starting');
+            // A small state flip to force the effect to restart.
+            setRetryCount((c) => c + 1);
+        },
     };
 }
